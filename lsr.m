@@ -4,7 +4,7 @@
 % first bin, following Pasquale et al. (2008) and Massobrio et al. (2015)
 % Excluded only final bin: 60 electrodes
 
-function [pdfLS, alphLS, genZetaLS] = lsr(xmin, xmax, pdfEMP)
+function [pdfLS, alphLS, coeffLS] = lsr(xmin, xmax, pdfEMP)
 
 x = xmin:xmax;
 y = pdfEMP;
@@ -17,5 +17,6 @@ Y = Y(y>0);
 % Least-squares fitting PDF
 coeffsLS = coeffvalues(LSfit);
 alphLS = -coeffsLS(1);
-genZetaLS = sum(((0:1000000) + xmin).^(-alphLS));
-pdfLS = x.^(-alphLS)/genZetaLS;
+pdfLS = x.^(-alphLS);
+coeffLS = 1/sum(pdfLS);
+pdfLS = pdfLS.*coeffLS;

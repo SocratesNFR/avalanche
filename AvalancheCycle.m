@@ -1,45 +1,69 @@
 % Cycle avalanche analysis
+% Run avalanche analysis 
 
-folders = {'MEA2/', 'MEA8/', 'MEA13/', 'MEA14/', ...
-    'MEA15/', 'MEA16/', 'MEA17/', 'MEA18/'};
+% ########################################################## %
+% Include sub-folders containing desired dataset. Folders here are used to
+% represent different MEAs in the dataset, and files in the folders are
+% recordings from different dates.
+
+% ---- Folders are given as cell arrays of strings
+folders = {'', ''};
+% ########################################################## %
+
+
+% Initialize variables
 numMEAs = length(folders);
 pNLR = cell(numMEAs,1);
-pLS = cell(numMEAs,1);
+pMLE = cell(numMEAs,1);
 numAvalanches = cell(numMEAs,1);
+fitAvalanches = cell(numMEAs,1);
 alphNLR = cell(numMEAs,1);
-alphLS = cell(numMEAs,1);
-deltaPNLR = cell(numMEAs,1);
-deltaPLS = cell(numMEAs,1);
+alphMLE = cell(numMEAs,1);
+MFR = cell(numMEAs,1);
+
 
 for MEAind = 1:length(folders)
-    close all
     % Get list of files for each MEA
     folder = folders{MEAind};
-    loc = '/Users/kri/Documents/MATLAB/Avalanche/';
+    
+% ########################################################## %    
+% Location of dataset folders
+
+    loc = '';
+% ########################################################## %
+
     loc = [loc, folder];
     files = dir(strcat(loc,'*.mat'));
     numFiles = length(files);
     
     % Initialize variables
     pNLR{MEAind} = zeros(numFiles, 1);
-    pLS{MEAind} = zeros(numFiles, 1);
+    pMLE{MEAind} = zeros(numFiles, 1);
+    
+    fitAvalanches{MEAind} = zeros(numFiles, 1);
     numAvalanches{MEAind} = zeros(numFiles, 1);
+    
     alphNLR{MEAind} = zeros(numFiles, 1);
-    alphLS{MEAind} = zeros(numFiles, 1);
-    deltaPNLR{MEAind} = zeros(numFiles, 1);
-    deltaPLS{MEAind} = zeros(numFiles, 1);
+    alphMLE{MEAind} = zeros(numFiles, 1);
+    
+    MFR{MEAind} = zeros(numFiles, 1);
     
     % Avalanche analysis on each file
     for fileind = 1:numFiles
-        [pNLR0, pLS0, numAvalanches0, alphNLR0, alphLS0, ...
-            deltaPNLR0, deltaPLS0] = avalancheAnalysis(fileind, MEAind);
+        [pNLR0, pMLE0, numAvalanches0, fitAvalanches0, ...
+            alphNLR0, alphMLE0, MFR0]...
+            = avalancheAnalysis(fileind, MEAind);
         pNLR{MEAind}(fileind) = pNLR0;
-        pLS{MEAind}(fileind) = pLS0;
+        pMLE{MEAind}(fileind) = pMLE0;
         numAvalanches{MEAind}(fileind) = numAvalanches0;
+        fitAvalanches{MEAind}(fileind) = fitAvalanches0;
         alphNLR{MEAind}(fileind) = alphNLR0;
-        alphLS{MEAind}(fileind) = alphLS0;
-        deltaPNLR{MEAind}(fileind) = deltaPNLR0;
-        deltaPLS{MEAind}(fileind) = deltaPLS0;
+        alphMLE{MEAind}(fileind) = alphMLE0;
+        MFR{MEAind}(fileind) = MFR0;
     end
-    
+    close all
 end
+
+savefile = 'results_6sig_last3';
+save(savefile, 'alphNLR', 'alphMLE', 'MFR', ...
+    'numAvalanches', 'fitAvalanches', 'pNLR', 'pMLE');

@@ -4,8 +4,9 @@
 function [totEvents, avgISI, avalancheID, avalancheSize, numAvalanches] = ...
     avalancheDetection(events, time, rate, excl)
 
-%% Calculate average interspike interval (network level)
+% Calculate average interspike interval (network level)
 % Event times in s, isi in ms
+
 evTimes = [];
 for el = 1:length(events)
     if ~ismember(el,excl) && events{el}(1,3) ~= 0
@@ -17,8 +18,10 @@ unique_ev_times = unique(evTimes);
 unique_ev_times = sort(unique_ev_times);
 ISI = diff(1e3*unique_ev_times);
 avgISI = mean(ISI <= 100);
+%avgISI = 2;          % ----------------------------- FORCE LARGER BINNING
 
-%% Time binning with bin width = avgISI
+
+% Time binning with bin width = avgISI
 
 binWidth = round(avgISI*1e-3*rate);
 if binWidth == 0
@@ -42,9 +45,11 @@ for el = 1:length(events)
     end
 end
 
-%% Avalanche detection
+
+% Avalanche detection
 % Create array where 0 means no avalanche and every time bin included in an
 % avalanche is labeled with an avalanche ID number
+
 avalancheID = zeros(binnedSize,1);
 k = 0;
 isAvalanche = 0;
@@ -61,7 +66,9 @@ for i = 1:binnedSize
     end
 end
 
+
 % Compute size and duration of each avalanche
+
 avalancheSize = zeros(k,1);
 avalancheDur = zeros(k,1);
 for j = 1:k

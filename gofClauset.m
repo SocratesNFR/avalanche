@@ -8,26 +8,21 @@
 %
 % Synthetic datasets are created using the method of transformation from
 % random numbers r drawn from a uniform distribution on [0, 1) based on the
-% method in Appendix D of Clauset et al. (2009).
+% method in Appendix D of Clauset et al. (2009). (see synthGen function)
 
 function p = gofClauset(CDFtheor, dKSemp, nS, xmin, xmax)
 
 % Synthetic datasets
-if nS <= 100
-    N = 5000;
-else
-    N = 1000;
-end
+N = 1000;
 x = xmin:xmax;
-extra = round(CDFtheor(end)*nS);   % Include extra avalanches to make up for
-                                   % ones that are sized > 60
+
 edges = (xmin-0.5):1:xmax+0.5;
-synthAvs = zeros(nS+extra, N);
-synth = zeros(length(x), N);
+synthAvs = zeros(nS, N);
+PDFsyn = zeros(length(x), N);
 dKSsyn = zeros(1, N);
 CDFsyn = zeros(length(x), N);
 for i = 1:N
-    for j = 1:nS+extra
+    for j = 1:nS
         r = rand;
         % Find value of CDF that's closest to CDF = 1 - r (Eq. (D.5))
         % without being less than 1 - r. Saves computation time in having
@@ -35,17 +30,17 @@ for i = 1:N
         differ = CDFtheor - (1 - r);
         minDiff = min(differ(differ>=0));
         if isempty(minDiff)
-            synthAvs(j,i) = 61;
+            synthAvs(j,i) = xmax+1;
         else
             synthAvs(j,i) = find(differ == minDiff, 1) + xmin - 1;
         end
     end
-    [synth(:,i), edges] = histcounts(synthAvs(:,i), edges);
-    PDFsyn = synth(:,i)./sum(synth(:,i));
-    for j = 1:length(x)
-        CDFsyn(j,i) = sum(PDFsyn(j:end));
+    [PDFsyn(:,i), edges] = histcounts(synthAvs(:,i), edges);
+    PDFsyn = PDFsyn(:,i)./sum(PDFsyn(:,i));
+    for k = 1:length(x)
+        CDFsyn(k,i) = sum(PDFsyn(k:end));
     end
     dKSsyn(i) = max(abs(CDFsyn(:,i) - CDFtheor));
 end
-fracHigher = length(find(dKSsyn > dKSemp));
+fracHigher = length(find(dKSsyn >= dKSemp));
 p = fracHigher/N;

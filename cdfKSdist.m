@@ -1,12 +1,12 @@
 % --- Calculate CDF and KS distance from given PDF
 
-function [CDF, cdfEMP, dKS] = cdfKSdist(PDF, pdfEMP)
+function [CDFtheor, CDFemp, dKS] = cdfKSdist(PDFtheor, PDFemp)
 
-CDF = zeros(length(PDF), 1);
-cdfEMP = zeros(length(pdfEMP), 1);
-for i = 1:length(PDF)
-    CDF(i, 1) = sum(PDF(i:end));
-    cdfEMP(i, 1) = sum(pdfEMP(i:end));
+CDFtheor = zeros(length(PDFtheor), 1);
+CDFemp = zeros(length(PDFemp), 1);
+for i = 1:length(PDFtheor)
+    CDFtheor(i, 1) = sum(PDFtheor(i:end));
+    CDFemp(i, 1) = sum(PDFemp(i:end));
 end
 
-dKS = max(abs(CDF - cdfEMP));
+dKS = max(abs(CDFtheor - CDFemp));
