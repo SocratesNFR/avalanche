@@ -17,7 +17,7 @@ totEvents = length(evTimes);
 unique_ev_times = unique(evTimes);
 unique_ev_times = sort(unique_ev_times);
 ISI = diff(1e3*unique_ev_times);
-avgISI = mean(ISI <= 100);
+avgISI = mean(ISI(ISI <= 100));
 %avgISI = 2;          % ----------------------------- FORCE LARGER BINNING
 
 
